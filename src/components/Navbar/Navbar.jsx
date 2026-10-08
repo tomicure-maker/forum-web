@@ -23,7 +23,7 @@ export const Navbar = () => {
       
       <div className="navbar-logo">
         <Link to="/">
-           <span>ForumWeb</span>
+          <span>ForumWeb</span>
         </Link>
       </div>
 

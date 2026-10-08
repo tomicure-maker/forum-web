@@ -12,11 +12,18 @@ function Dashboard() {
         { tagName: "Pregunta", color: "success" },
     ];
 
-
     const [posts, setPosts] = useState([]);
 
     const handleNewPostSubmit = (postData) => {
-        setPosts((currentPosts) => [...currentPosts, postData]);
+
+        const newPost = {
+            ...postData,
+            id: posts.length + 1,
+            author: "Usuario",
+            date: new Date().toLocaleDateString(),
+        }
+        setPosts((currentPosts) => [...currentPosts, newPost]);
+
     };
 
     return (
@@ -24,6 +31,7 @@ function Dashboard() {
             <h1> FORO </h1>
             <NewPost onNewPostSubmit={handleNewPostSubmit}
             availableTags={availableTags} />
+
             <PostList posts={posts} />
         </div>
     );

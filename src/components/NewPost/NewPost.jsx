@@ -20,7 +20,6 @@ function NewPost({ onNewPostSubmit, availableTags }) {
 
     return (
         <div className="new-post">
-            <h2>Create a New Post!</h2>
             <Form onSubmit={handleSubmit}>
                 <Form.Label htmlFor="title">Title:</Form.Label>
                 <Form.Control
@@ -37,6 +36,7 @@ function NewPost({ onNewPostSubmit, availableTags }) {
                     id="content"
                     name="content"
                     value={content}
+                    placeholder="Create a New Post!"
                     onChange={(e) => setContent(e.target.value)}
                     required
                 />

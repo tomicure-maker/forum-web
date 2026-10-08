@@ -1,15 +1,18 @@
+import {useNavigate} from "react-router-dom";
 import Tag from "../Tag/Tag";
 
-function Post({ post }) {
-    const { title, content, tags = [] } = post;
+function Post({ id, title, content, tags = [] }) {
+
+    const navigate = useNavigate();
+
+    const handlePostClick = () => {
+        navigate(`/post/${id}`);
+    };
 
     return (
-        <div className="blog-post">
+        <div className="blog-post" onClick={handlePostClick}>
             <h2 className="display-5 link-body-emphasis mb-1">{title}</h2>
             <hr />
-            <p className="blog-post-meta">
-                Posted on January 1, 2023 by John Doe
-            </p>
             <p>{content}</p>
             <div className="tags">
                 {tags.map((tag) => (
