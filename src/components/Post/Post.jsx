@@ -1,4 +1,5 @@
 import Tag from "../Tag/Tag";
+import CommentList from '../Comments/CommentList';
 
 function Post({ post }) {
     const { title, content, tags = [] } = post;
@@ -21,6 +22,9 @@ function Post({ post }) {
                     />
                 ))}
             </div>
+
+                <CommentList />
+
         </div>
     );
 }
