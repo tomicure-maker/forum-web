@@ -25,3 +25,4 @@ export const Post = sequelize.define("post", {
   }
 }, { timestamps: false });
 
+export default Post;
