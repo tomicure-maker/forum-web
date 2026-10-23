@@ -19,10 +19,6 @@ export const Post = sequelize.define("post", {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   },
-  autor: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
 }, { timestamps: false });
 
 export default Post;

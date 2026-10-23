@@ -32,11 +32,4 @@ router.delete("/posts/:id", async (req, res) => {
   res.send(`Deleting post ${id}`);
 });
 
-/*router.put("/posts/:id", async (req, res) => {
-  const {id} = req.params;
-  const { titulo, contenido, autor } = req.body;
-  const post = await Post.findByPk(id);
-  await post.update({ titulo, contenido, autor });
-  res.json(post);
-});*/
 export default router;
