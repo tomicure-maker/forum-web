@@ -1,30 +1,35 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Spinner } from "react-bootstrap";
 import NewPost from "../NewPost/NewPost.jsx";
 import PostList from "../PostList/PostList.jsx";
 import { createPost, getPosts } from "../../services/postService.js";
+import { getTags } from "../../services/tagService.js";
 import { isAuthenticated } from "../../services/authService.js";
 
 function Dashboard() {
-    const availableTags = [
-        { tagName: "JavaScript", color: "warning" },
-        { tagName: "React", color: "primary" },
-        { tagName: "CSS", color: "info" },
-        { tagName: "Pregunta", color: "success" },
-    ];
     const [posts, setPosts] = useState([]);
+    const [availableTags, setAvailableTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [loggedIn, setLoggedIn] = useState(isAuthenticated());
 
-    const loadPosts = useCallback(async () => {
-        setLoading(true);
-        try { setPosts(await getPosts()); setError(""); }
-        catch (err) { setError(err.message); }
-        finally { setLoading(false); }
-    }, []);
+    useEffect(() => {
+        let active = true;
+        Promise.allSettled([getPosts(), getTags()]).then(([postsResult, tagsResult]) => {
+            if (!active) return;
 
-    useEffect(() => { loadPosts(); }, [loadPosts]);
+            const errors = [];
+            if (postsResult.status === "fulfilled") setPosts(postsResult.value);
+            else errors.push(postsResult.reason.message);
+
+            if (tagsResult.status === "fulfilled") setAvailableTags(tagsResult.value);
+            else errors.push(tagsResult.reason.message);
+
+            setError(errors.join(" "));
+            setLoading(false);
+        });
+        return () => { active = false; };
+    }, []);
     useEffect(() => {
         const updateAuth = () => setLoggedIn(isAuthenticated());
         window.addEventListener("forum-auth-changed", updateAuth);

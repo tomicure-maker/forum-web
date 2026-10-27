@@ -1,0 +1,10 @@
+{
+  "name": "forum",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others --names API,WEB \"npm --prefix forum-web-api run dev\" \"npm --prefix forum-web run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

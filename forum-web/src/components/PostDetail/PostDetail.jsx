@@ -27,7 +27,10 @@ function PostDetail() {
     return <div className="blog-post container mt-4">
         <h1>{post.title}</h1><hr /><p>{post.content}</p>
         <p className="text-muted">Publicado por {post.author}</p>
-        <div className="tags">{post.tags.map((tag) => <Tag key={tag.tagName} tagName={tag.tagName} color={tag.color} />)}</div>\n        <CommentList postId={post.id} />
+        <div className="tags">{post.tags.map((tag) => <Tag key={tag.tagName} tagName={tag.tagName} color={tag.color} />)}</div>\n        
+        <CommentForm/>
+        <br></br>
+        <CommentList postId={post.id} />
     </div>;
 }
 

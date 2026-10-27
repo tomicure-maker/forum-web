@@ -4,8 +4,10 @@ import { PORT } from "./config.js";
 import postsRoutes from "../routes/posts.routes.js";
 import authRoutes from "../routes/auth.routes.js";
 import commentsRoutes from "../routes/comments.routes.js";
+import tagsRoutes from "../routes/tags.routes.js";
 import "../models/associations.js";
-import { sequelize } from "../db.js";
+import { migrateLegacyPosts, sequelize } from "../db.js";
+import { seedDefaultTags } from "../services/tagService.js";
 
 const app = express();
 
@@ -24,6 +26,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 app.use(postsRoutes);
+app.use(tagsRoutes);
 app.use(authRoutes);
 app.use(commentsRoutes);
 app.use((error, _req, res, _next) => {
@@ -34,7 +37,9 @@ app.use((error, _req, res, _next) => {
 });
 
 try {
+  await migrateLegacyPosts();
   await sequelize.sync();
+  await seedDefaultTags();
   app.listen(PORT, () => console.log(`API disponible en http://localhost:${PORT}`));
 } catch (error) {
   console.error("No se pudo iniciar la API:", error);
