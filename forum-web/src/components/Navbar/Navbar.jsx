@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { getCurrentUser, isAuthenticated, logout } from "../../services/authService.js";
+import {ThemeContext} from '../../services/theme/theme.context.jsx';
+import {LIGHT_TH} from '../../services/theme/theme.constants.js';
+import { Button } from "react-bootstrap";
+
 import "./Navbar.css";
 
 export const Navbar = () => {
@@ -14,7 +18,10 @@ export const Navbar = () => {
 
     const handleLogout = () => { logout(); navigate("/"); };
 
-    return <nav className="navbar">
+    const { theme, toggleTheme } = useContext(ThemeContext);
+    return (
+    <>
+    <nav className="navbar">
         <div className="navbar-logo"><Link to="/"><span>ForumWeb</span></Link></div>
         <ul className="navbar-links">
             <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Inicio</NavLink></li>
@@ -29,5 +36,16 @@ export const Navbar = () => {
                 <Link to="/register" className="btn-register">Registrarse</Link>
             </div>}
         </div>
-    </nav>;
+        <div className="theme-toggle">
+            <Button className="btn-theme" onClick={toggleTheme}>
+                {theme === LIGHT_TH ? (
+                    <img className="bi bi-sun-fill" src="/sun-fill.svg" width="16" height="16" focusable="true" alt="" />
+                ) : (
+                    <img className="bi bi-sun" src="/sun.svg" width="16" height="16" focusable="true" alt="" />
+                )}
+            </Button>
+        </div>
+    </nav>
+    </>
+    )
 };
