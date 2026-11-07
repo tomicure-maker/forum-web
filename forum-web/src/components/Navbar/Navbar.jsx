@@ -25,7 +25,28 @@ export const Navbar = () => {
         <div className="navbar-logo"><Link to="/"><span>ForumWeb</span></Link></div>
         <ul className="navbar-links">
             <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Inicio</NavLink></li>
-            {user?.esAdmin && <li><span className="badge-role role-admin">Administrador</span></li>}
+                                {user?.rol === "superadmin" && (
+                                    <li>
+                                        <span className="badge-role role-admin">SuperAdmin</span>
+                                    </li>
+                                )}
+
+                                {user?.rol === "superadmin" && (
+                                      <li>
+                                          <NavLink
+                                             to="/admin"
+                                             className={({ isActive }) => isActive ? "active" : ""}
+                                           >
+                                              Administrar usuarios
+                                            </NavLink>
+                                        </li>
+                                )}
+
+                                 {user?.rol === "admin" && (
+                                      <li>
+                                         <span className="badge-role role-admin">Administrador</span>
+                                      </li>
+                                )}
         </ul>
         <div className="navbar-auth">
             {user && isAuthenticated() ? <div className="user-profile">

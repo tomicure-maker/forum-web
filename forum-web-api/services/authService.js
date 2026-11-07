@@ -11,6 +11,7 @@ export async function registerUser({ nombreUsuario, email, password }) {
     error.status = 400;
     throw error;
   }
+
   if (password.length < 8) {
     const error = new Error("La contraseña debe tener al menos 8 caracteres.");
     error.status = 400;
@@ -30,8 +31,17 @@ export async function registerUser({ nombreUsuario, email, password }) {
   const salt = randomBytes(16).toString("hex");
   const derived = await scrypt(password, salt, 64);
   const passwordHash = `${salt}:${Buffer.from(derived).toString("hex")}`;
-  return User.create({ nombreUsuario: nombreUsuario.trim(), email: normalizedEmail, password: passwordHash, esAdmin: false });
+  return User.create({ 
+
+    nombreUsuario: nombreUsuario.trim(),
+    email: normalizedEmail,
+    password: passwordHash,
+    esAdmin: false,
+    rol: "usuario",
+   });
+    
 }
+
 
 export async function verifyCredentials({ identificador, password }) {
   if (!identificador?.trim() || !password) {
@@ -39,6 +49,7 @@ export async function verifyCredentials({ identificador, password }) {
     error.status = 400;
     throw error;
   }
+
   const value = identificador.trim();
   const user = await User.findOne({ where: { [Op.or]: [{ nombreUsuario: value }, { email: value.toLowerCase() }] } });
   if (!user || !user.password.includes(":")) {
@@ -46,6 +57,7 @@ export async function verifyCredentials({ identificador, password }) {
     error.status = 401;
     throw error;
   }
+
   const [salt, savedHash] = user.password.split(":");
   const candidate = Buffer.from(await scrypt(password, salt, 64)).toString("hex");
   const savedBuffer = Buffer.from(savedHash, "hex");
@@ -59,5 +71,12 @@ export async function verifyCredentials({ identificador, password }) {
 }
 
 export function publicUser(user) {
-  return { id: user.id, nombreUsuario: user.nombreUsuario, email: user.email, esAdmin: user.esAdmin };
+  return { 
+    id: user.id,
+    nombreUsuario: user.nombreUsuario, 
+    email: user.email, 
+    esAdmin: user.esAdmin,
+    rol: user.rol,
+
+  };
 }

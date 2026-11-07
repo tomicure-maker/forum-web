@@ -6,8 +6,9 @@ import authRoutes from "../routes/auth.routes.js";
 import commentsRoutes from "../routes/comments.routes.js";
 import tagsRoutes from "../routes/tags.routes.js";
 import "../models/associations.js";
-import { migrateLegacyPosts, sequelize } from "../db.js";
+import { migrateLegacyPosts, migrateUserRoles, sequelize } from "../db.js";
 import { seedDefaultTags } from "../services/tagService.js";
+import usersRoutes from "../routes/users.routes.js";
 
 const app = express();
 
@@ -18,10 +19,11 @@ app.use((req, res, next) => {
     res.setHeader("Vary", "Origin");
   }
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   if (req.method === "OPTIONS") return res.status(204).end();
   next();
 });
+
 app.use(express.json());
 app.use(morgan("dev"));
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
@@ -29,6 +31,7 @@ app.use(postsRoutes);
 app.use(tagsRoutes);
 app.use(authRoutes);
 app.use(commentsRoutes);
+app.use(usersRoutes);
 app.use((error, _req, res, _next) => {
   console.error(error);
   const status = error.status || (error.name === "SequelizeUniqueConstraintError" ? 409 : 500);
@@ -36,11 +39,17 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ message });
 });
 
+
 try {
+
   await migrateLegacyPosts();
   await sequelize.sync();
+  await migrateUserRoles();
   await seedDefaultTags();
+
+
   app.listen(PORT, () => console.log(`API disponible en http://localhost:${PORT}`));
+
 } catch (error) {
   console.error("No se pudo iniciar la API:", error);
   process.exitCode = 1;

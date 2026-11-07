@@ -6,6 +6,8 @@ function mapPost(post) {
         title: post.titulo,
         content: post.contenido,
         author: post.autor?.nombreUsuario || post.autorNombre || "Usuario",
+        authorId: post.autor?.id,
+        authorRole: post.autor?.rol,
         date: post.fecha_creacion,
         tags: (post.etiquetas || []).map((tag) => ({ tagName: tag.nombre, color: tag.color || "secondary" })),
     };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CommentForm from "./CommentForm.jsx";
 
-export default function Comment({ comment, onAddReply, canComment }) {
+export default function Comment({ comment, onAddReply, onDelete, canComment, canDelete, }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
 
   async function handleReply(text) {
@@ -17,10 +17,20 @@ export default function Comment({ comment, onAddReply, canComment }) {
         onClick={() => setShowReplyForm((value) => !value)}>
         {showReplyForm ? "Cancelar" : "Responder"}
       </button>}
+      {canDelete && (
+        <button
+           type="button"
+           className="btn btn-link btn-sm text-danger p-0 ms-3"
+           onClick={() => onDelete(comment.id)}
+         >
+           Eliminar
+        </button>
+        )}
+      
     </div>
     {showReplyForm && <div className="mt-2"><CommentForm onSubmit={handleReply} placeholder="Escribe tu respuesta..." /></div>}
     {(comment.replies || []).map((reply) =>
-      <Comment key={reply.id} comment={reply} onAddReply={onAddReply} canComment={canComment} />
+      <Comment key={reply.id} comment={reply} onAddReply={onAddReply} onDelete={onDelete} canComment={canComment}  canDelete={canDelete}/>
     )}
   </div>;
 }

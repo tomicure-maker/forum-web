@@ -1,4 +1,4 @@
-import { Sequelize} from "sequelize";
+import { Sequelize, DataTypes } from "sequelize";
 import path from "path";
 
 console.log("Base de datos utilizada:", path.resolve("./forum.db"));
@@ -44,4 +44,33 @@ export async function migrateLegacyPosts() {
   } finally {
     await sequelize.query("PRAGMA foreign_keys = ON");
   }
+}
+
+export async function migrateUserRoles() {
+  const queryInterface = sequelize.getQueryInterface();
+
+  const tables = await queryInterface.showAllTables();
+
+  if (!tables.includes("users")) return;
+
+  const columns = await queryInterface.describeTable("users");
+
+  if (columns.rol) return;
+
+  await queryInterface.addColumn("users", "rol", {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "usuario",
+
+  });
+  
+  await sequelize.query(`
+    UPDATE users
+    SET rol ='admin'
+    WHERE esAdmin = 1
+    
+  
+    `);
+
+  console.log("Migracion de roles completada");
 }

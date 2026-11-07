@@ -3,11 +3,11 @@ import { User } from "../models/User.js";
 import Post from "../models/Post.js";
 
 const commentInclude = [
-  { model: User, as: "autor", attributes: ["id", "nombreUsuario"] },
+  { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
   { model: Comentario, as: "respuestas", include: [
-    { model: User, as: "autor", attributes: ["id", "nombreUsuario"] },
+    { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
     { model: Comentario, as: "respuestas", include: [
-      { model: User, as: "autor", attributes: ["id", "nombreUsuario"] }
+      { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] }
     ] }
   ] }
 ];
@@ -48,4 +48,42 @@ export async function createComment({ postId, contenido, comentarioPadreId }, us
   return Comentario.findByPk(created.id, {
     include: [{ model: User, as: "autor", attributes: ["id", "nombreUsuario"] }]
   });
+}
+
+
+export async function deleteComment(commentId, user) {
+  const comment = await Comentario.findByPk(commentId, {
+    include: [
+      {
+        model: User,
+        as: "autor",
+        attributes: ["id", "rol"],
+      },
+    ],
+  });
+
+  if (!comment) {
+    const error = new Error("No se encontro el comentario");
+    error.status = 404;
+    throw error;
+  }
+
+  const esAutor = comment.usuarioId === user.id;
+
+  const esAdminAutorizado =
+    user.rol === "admin" && comment.autor?.rol === "usuario";
+
+  const esSuperAdminAutorizado =
+    user.rol === "superadmin" &&
+    ["usuario", "admin"].includes(comment.autor?.rol);
+
+  if (!esAutor && !esAdminAutorizado && !esSuperAdminAutorizado) {
+    const error = new Error(
+      "No tenes permisos para eliminar este comentario"
+    );
+    error.status = 403;
+    throw error;
+  }
+
+  await comment.destroy();
 }

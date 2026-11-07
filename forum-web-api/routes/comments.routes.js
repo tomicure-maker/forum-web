@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/authMiddleware.js";
-import { createComment, listComments } from "../services/commentService.js";
+import { createComment, listComments, deleteComment, } from "../services/commentService.js";
 
 const router = Router();
 
@@ -18,6 +18,24 @@ router.post("/posts/:postId/comments", requireAuth, async (req, res, next) => {
     if (!Number.isInteger(postId) || postId <= 0) return res.status(400).json({ message: "ID de publicación inválido." });
     res.status(201).json(await createComment({ postId, contenido: req.body.contenido, comentarioPadreId: req.body.comentarioPadreId }, req.user.id));
   } catch (error) { next(error); }
+});
+
+router.delete("/comments/:commentId", requireAuth, async (req, res, next) => {
+  try {
+    const commentId = Number(req.params.commentId);
+
+    if (!Number.isInteger(commentId) || commentId <= 0) {
+      return res.status(400).json({
+        message: "ID de comentario invalido",
+      });
+    }
+
+    await deleteComment(commentId, req.user);
+
+    res.json({ message: "Comentario eliminado correctamente" });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

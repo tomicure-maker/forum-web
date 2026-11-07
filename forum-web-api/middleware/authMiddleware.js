@@ -1,10 +1,16 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { User } from "../models/User.js";
 
-const secret = process.env.JWT_SECRET || "solo-desarrollo-cambiar-JWT_SECRET";
+const secret = process.env.JWT_SECRET;
+
+if (process.env.NODE_ENV === "production" && (!secret || secret.length < 32)) {
+  throw new Error("En producción JWT_SECRET debe existir y tener al menos 32 caracteres.");
+}
+
+const signingSecret = secret || "solo-desarrollo-cambiar-JWT_SECRET";
 
 function sign(value) {
-  return createHmac("sha256", secret).update(value).digest("base64url");
+  return createHmac("sha256", signingSecret).update(value).digest("base64url");
 }
 
 export function createToken(user) {
@@ -35,6 +41,22 @@ export async function requireAuth(req, res, next) {
 }
 
 export function requireAdmin(req, res, next) {
-  if (!req.user?.esAdmin) return res.status(403).json({ message: "Necesitás permisos de administrador." });
+  if (!["admin", "superadmin"].includes(req.user?.rol)) {
+    return res.status(403).json({
+      message: "Necesitas permisos de administrador",
+    });
+  }
+
+  next();
+}
+
+
+export function requireSuperAdmin(req, res, next) {
+  if (req.user?.rol !== "superadmin") {
+    return res.status(403).json({
+      message: "Necesitas permisos de superAdmin"
+    });
+  }
+
   next();
 }

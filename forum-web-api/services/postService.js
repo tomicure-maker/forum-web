@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 import { Etiqueta } from "../models/Etiqueta.js";
 
 const include = [
-  { model: User, as: "autor", attributes: ["id", "nombreUsuario", "esAdmin"] },
+  { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
   { model: Etiqueta, as: "etiquetas", through: { attributes: [] } },
 ];
 
@@ -37,16 +37,41 @@ export async function createPost({ titulo, contenido, tags = [] }, userId) {
 }
 
 export async function deletePost(id, user) {
-  const post = await Post.findByPk(id);
+  const post = await Post.findByPk(id, {
+    include: [
+      {
+        model: User,
+        as: "autor",
+        attributes: ["id", "rol"],
+      },
+    ],
+  });
+
   if (!post) {
-    const error = new Error("No se encontró la publicación.");
+    const error = new Error("No se encontro la publicacion");
     error.status = 404;
     throw error;
+
   }
-  if (post.usuarioId !== user.id && !user.esAdmin) {
-    const error = new Error("Solo el autor o un administrador pueden eliminar esta publicación.");
+
+  const esAutor = post.usuarioId === user.id;
+
+  const esAdminAutorizado =
+  user.rol === "admin" && post.autor?.rol === "usuario";
+
+  const esSuperAdminAutorizado =
+   user.rol === "superadmin" &&
+   ["usuario", "admin"].includes(post.autor?.rol);
+
+  
+  if (!esAutor && !esAdminAutorizado && !esSuperAdminAutorizado) {
+    const error = new Error(
+      "No tenes permisos para eliminar esta publicacion"
+    );
     error.status = 403;
     throw error;
   }
+
   await post.destroy();
+  
 }
