@@ -90,9 +90,9 @@ function canDeleteComment(comment) {
     <div className="mt-3">
       {loading ? (
         <p>Cargando comentarios...</p>
-       ) : comments.length === 0 ? (
+      ) : comments.length === 0 ? (
         <p className="text-muted">Aun no hay comentarios. ¡Sé el primero en comentar!</p>
-       ) : ( 
+      ) : ( 
         comments.map((comment) => (
         <Comment
         key={comment.id} 

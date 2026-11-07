@@ -8,7 +8,6 @@ export async function getUsers() {
 
 export async function updateUserRole(userId, rol) {
     return apiRequest(`/users/${userId}/role`, {
-          
         method: "PATCH",
         body: JSON.stringify({ rol }),
     });

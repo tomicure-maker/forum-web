@@ -32,20 +32,20 @@ export const Navbar = () => {
                                 )}
 
                                 {user?.rol === "superadmin" && (
-                                      <li>
-                                          <NavLink
-                                             to="/admin"
-                                             className={({ isActive }) => isActive ? "active" : ""}
-                                           >
-                                              Administrar usuarios
+                                    <li>
+                                        <NavLink
+                                            to="/admin"
+                                            className={({ isActive }) => isActive ? "active" : ""}
+                                        >
+                                            Administrar usuarios
                                             </NavLink>
                                         </li>
                                 )}
 
-                                 {user?.rol === "admin" && (
-                                      <li>
-                                         <span className="badge-role role-admin">Administrador</span>
-                                      </li>
+                                {user?.rol === "admin" && (
+                                    <li>
+                                        <span className="badge-role role-admin">Administrador</span>
+                                    </li>
                                 )}
         </ul>
         <div className="navbar-auth">

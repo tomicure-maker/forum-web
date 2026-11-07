@@ -48,12 +48,12 @@ function Dashboard() {
 
     const handleDeletePost = async (postId) => {
         try {
-             await deletePost(postId);
-             setPosts((current) => current.filter((post) => post.id !== postId));
-             setError("");
-         } catch (err) {
+            await deletePost(postId);
+            setPosts((current) => current.filter((post) => post.id !== postId));
+            setError("");
+        } catch (err) {
                 setError(err.message);
-         }
+        }
     };
 
     return (
@@ -64,11 +64,11 @@ function Dashboard() {
             {loading ? (
                 <Spinner animation="border" role="status" aria-label="Cargando publicaciones" /> 
             ) : (
-                 <PostList 
-                 posts={posts}
-                 onDeletePost={handleDeletePost}
-                 
-                 />
+                <PostList 
+                posts={posts}
+                onDeletePost={handleDeletePost}
+                
+                />
             )}
         </div>
     );

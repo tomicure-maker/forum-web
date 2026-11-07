@@ -38,7 +38,7 @@ export async function registerUser({ nombreUsuario, email, password }) {
     password: passwordHash,
     esAdmin: false,
     rol: "usuario",
-   });
+  });
     
 }
 

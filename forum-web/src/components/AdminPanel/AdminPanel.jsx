@@ -25,7 +25,7 @@ function AdminPanel() {
         loadUsers();
     }, []);
 
-     async function handleRoleChange(userId, newRole) {
+    async function handleRoleChange(userId, newRole) {
         setError("");
         setMessage("");
 

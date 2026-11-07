@@ -2,7 +2,7 @@ import Post from "../Post/Post.jsx";
 
 function PostList({ posts, onDeletePost }) {
     if (!posts.length) return <p>Todavía no hay publicaciones.</p>;
-    return <div className="post-list">
+    return <div className="post-list container">
         {posts.map((post) => (
             <Post 
                 key={post.id} 

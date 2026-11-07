@@ -33,9 +33,9 @@ export async function migrateLegacyPosts() {
       );
       await sequelize.query(
         `INSERT INTO posts_migrating (id, titulo, contenido, fecha_creacion, autorNombre, usuarioId)
-         SELECT posts.id, posts.titulo, posts.contenido, posts.fecha_creacion, posts.autor,
-           (SELECT users.id FROM users WHERE users.nombreUsuario = posts.autor LIMIT 1)
-         FROM posts`,
+        SELECT posts.id, posts.titulo, posts.contenido, posts.fecha_creacion, posts.autor,
+          (SELECT users.id FROM users WHERE users.nombreUsuario = posts.autor LIMIT 1)
+        FROM posts`,
         { transaction },
       );
       await sequelize.query("DROP TABLE posts", { transaction });

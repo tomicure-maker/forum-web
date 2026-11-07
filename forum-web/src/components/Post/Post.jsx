@@ -12,7 +12,7 @@ function Post({ id, title, content, tags = [], authorId, authorRole, onDeletePos
     const isAuthor = currentUser?.id === authorId;
 
     const canDelete =
-         isAuthor ||
+        isAuthor ||
         (currentUser?.rol === "admin" && authorRole === "usuario") ||
         (currentUser?.rol === "superadmin" &&
             ["usuario", "admin"].includes(authorRole));
@@ -22,7 +22,7 @@ function Post({ id, title, content, tags = [], authorId, authorRole, onDeletePos
     };
 
     return (
-        <div className="blog-post" onClick={handlePostClick}>
+        <div className="blog-post border rounded p-3 mb-3 shadow-sm w-100" onClick={handlePostClick}>
             <h2 className="display-5 link-body-emphasis mb-1">{title}</h2>
 
             {canDelete && (
@@ -37,7 +37,7 @@ function Post({ id, title, content, tags = [], authorId, authorRole, onDeletePos
                         }
                     }}
                 >
-                     Eliminar
+                    Eliminar
                 </button>
             )}
 

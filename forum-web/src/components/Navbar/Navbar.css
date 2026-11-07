@@ -1,17 +1,29 @@
+:root {
+  --site-nav-background: #f8f9fa;
+  --site-nav-foreground: #212529;
+  --site-nav-accent: #0d6efd;
+}
+
+:root[data-bs-theme="dark"] {
+  --site-nav-background: #1e293b;
+  --site-nav-foreground: #f8fafc;
+  --site-nav-accent: #38bdf8;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e293b;
+  background-color: var(--site-nav-background);
   padding: 0.8rem 1.5rem;
-  color: #ffffff;
+  color: var(--site-nav-foreground);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-logo a {
   font-size: 1.4rem;
   font-weight: bold;
-  color: #38bdf8;
+  color: var(--site-nav-accent);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -27,19 +39,19 @@
 }
 
 .navbar-links a {
-  color: #cbd5e1;
+  color: color-mix(in srgb, var(--site-nav-foreground) 78%, transparent);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .navbar-links a:hover {
-  color: #ffffff;
+  color: var(--site-nav-foreground);
 }
 
 .navbar-links a.active {
-  color: #38bdf8;
-  border-bottom: 2px solid #38bdf8;
+  color: var(--site-nav-accent);
+  border-bottom: 2px solid var(--site-nav-accent);
   padding-bottom: 2px;
 }
 
@@ -57,7 +69,7 @@
 
 .user-name {
   font-size: 0.9rem;
-  color: #f8fafc;
+  color: var(--site-nav-foreground);
 }
 
 .badge-role {
@@ -105,11 +117,11 @@
 }
 
 .btn-login {
-  color: #ffffff;
+  color: var(--site-nav-foreground);
 }
 
 .btn-register {
-  background-color: #38bdf8;
+  background-color: var(--site-nav-accent);
   color: #0f172a;
   font-weight: 600;
 }

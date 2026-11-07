@@ -19,11 +19,11 @@ export default function Comment({ comment, onAddReply, onDelete, canComment, can
       </button>}
       {canDelete && (
         <button
-           type="button"
-           className="btn btn-link btn-sm text-danger p-0 ms-3"
-           onClick={() => onDelete(comment.id)}
-         >
-           Eliminar
+          type="button"
+          className="btn btn-link btn-sm text-danger p-0 ms-3"
+          onClick={() => onDelete(comment.id)}
+        >
+          Eliminar
         </button>
         )}
       
