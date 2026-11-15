@@ -5,6 +5,7 @@
 *.db-journal
 *.db-shm
 *.db-wal
+!forum-web-api/forum.db
 
 *.backup
 *.bak
