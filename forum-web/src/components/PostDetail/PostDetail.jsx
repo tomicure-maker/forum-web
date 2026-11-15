@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { Alert, Spinner } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Tag from "../Tag/Tag.jsx";
-import { getPost, updatePost } from "../../services/postService.js";
+import { deletePost, getPost, updatePost } from "../../services/postService.js";
 import CommentList from "../Comments/CommentList.jsx";
 import { getCurrentUser } from "../../services/authService.js";
 
 function PostDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [result, setResult] = useState({ id: null, post: null, error: "" });
     const [editing, setEditing] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [saving, setSaving] = useState(false);
-    const [editError, setEditError] = useState("");
+    const [deleting, setDeleting] = useState(false);
+    const [actionError, setActionError] = useState("");
 
     useEffect(() => {
         let active = true;
@@ -34,20 +36,42 @@ function PostDetail() {
     const canEdit =
         currentUser?.id === post.authorId ||
         ["admin", "superadmin"].includes(currentUser?.rol);
+    const canDelete =
+        currentUser?.id === post.authorId ||
+        (currentUser?.rol === "admin" && post.authorRole === "usuario") ||
+        (currentUser?.rol === "superadmin" &&
+            ["usuario", "admin"].includes(post.authorRole));
 
     async function handleEditSubmit(event) {
         event.preventDefault();
         setSaving(true);
-        setEditError("");
+        setActionError("");
 
         try {
             const updatedPost = await updatePost(post.id, { title, content });
             setResult((current) => ({ ...current, post: updatedPost }));
             setEditing(false);
         } catch (error) {
-            setEditError(error.message || "No se pudo editar la publicación.");
+            setActionError(error.message || "No se pudo editar la publicación.");
         } finally {
             setSaving(false);
+        }
+    }
+
+    async function handleDelete() {
+        if (!window.confirm("¿Estás seguro de que querés eliminar esta publicación?")) {
+            return;
+        }
+
+        setDeleting(true);
+        setActionError("");
+        try {
+            await deletePost(post.id);
+            navigate("/");
+        } catch (error) {
+            setActionError(error.message || "No se pudo eliminar la publicación.");
+        } finally {
+            setDeleting(false);
         }
     }
 
@@ -82,22 +106,36 @@ function PostDetail() {
                 <h1>{post.title}</h1>
                 <hr />
                 <p>{post.content}</p>
-                {canEdit && (
-                    <button
-                        type="button"
-                        className="btn btn-outline-primary btn-sm mb-2"
-                        onClick={() => {
-                            setTitle(post.title);
-                            setContent(post.content);
-                            setEditing(true);
-                        }}
-                    >
-                        Editar
-                    </button>
+                {(canEdit || canDelete) && (
+                    <div className="d-flex gap-2 mb-2">
+                        {canEdit && (
+                            <button
+                                type="button"
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => {
+                                    setTitle(post.title);
+                                    setContent(post.content);
+                                    setEditing(true);
+                                }}
+                            >
+                                Editar
+                            </button>
+                        )}
+                        {canDelete && (
+                            <button
+                                type="button"
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={handleDelete}
+                                disabled={deleting}
+                            >
+                                {deleting ? "Eliminando..." : "Eliminar"}
+                            </button>
+                        )}
+                    </div>
                 )}
             </>
         )}
-        {editError && <Alert variant="danger">{editError}</Alert>}
+        {actionError && <Alert variant="danger">{actionError}</Alert>}
         <div className="text-muted">
             <div>Publicado por {post.author}</div>
             {post.editedBy && <div>Editado por {post.editedBy}</div>}

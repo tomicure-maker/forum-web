@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import TagSelector from "../TagSelector/TagSelector.jsx";
+import "./NewPost.css";
 
 function NewPost({ onNewPostSubmit, availableTags }) {
     const [title, setTitle] = useState("");
