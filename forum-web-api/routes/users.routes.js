@@ -1,9 +1,6 @@
 import { Router } from "express";
-import {
-    requireAuth,
-    requireSuperAdmin,
-} from "../middleware/authMiddleware.js";
-import { updateUserRole, getUsers,} from "../services/userService.js";  
+import { requireAuth, requireSuperAdmin } from "../middleware/authMiddleware.js";
+import { updateUserRole, getUsers, deleteUser} from "../services/userService.js";  
 
 const router = Router();
 router.get(
@@ -48,5 +45,34 @@ router.patch(
         }
     }
 );
+
+router.delete(
+    "/users/:id",
+    requireAuth,
+    requireSuperAdmin,
+    async (req, res, next) => {
+        try {
+            const userId = Number(req.params.id);
+
+            if (!Number.isInteger(userId) || userId <= 0) {
+                return res.status(400).json({
+                    message: "ID de usuario inválido"
+                });
+            }
+
+            await deleteUser(userId, req.user.id);
+
+            res.json({
+                message: "Usuario eliminado correctamente"
+            });
+
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+
+
 
 export default router;
