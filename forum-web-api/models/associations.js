@@ -6,11 +6,13 @@ import { Etiqueta } from "./Etiqueta.js";
 // Un usuario puede crear muchas publicaciones y comentarios.
 User.hasMany(Post, { foreignKey: "usuarioId", as: "publicaciones" });
 Post.belongsTo(User, { foreignKey: "usuarioId", as: "autor" });
+Post.belongsTo(User, { foreignKey: "editadoPorId", as: "editor" });
 
 Post.hasMany(Comentario, { foreignKey: "postId", as: "comentarios" });
 Comentario.belongsTo(Post, { foreignKey: "postId", as: "publicacion" });
 User.hasMany(Comentario, { foreignKey: "usuarioId", as: "comentarios" });
 Comentario.belongsTo(User, { foreignKey: "usuarioId", as: "autor" });
+Comentario.belongsTo(User, { foreignKey: "editadoPorId", as: "editor" });
 
 Post.belongsToMany(Etiqueta, { through: "post_etiquetas", foreignKey: "postId", otherKey: "etiquetaId", as: "etiquetas" });
 Etiqueta.belongsToMany(Post, { through: "post_etiquetas", foreignKey: "etiquetaId", otherKey: "postId", as: "publicaciones" });

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Comment from "./Comment.jsx";
 import CommentForm from "./CommentForm.jsx";
-import { addComment, getComments, deleteComment, } from "../../services/commentService.js";
+import { addComment, getComments, deleteComment, updateComment } from "../../services/commentService.js";
 import { isAuthenticated, getCurrentUser, } from "../../services/authService.js";
 
 export default function CommentList({ postId }) {
@@ -13,14 +13,26 @@ export default function CommentList({ postId }) {
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
 
   const load = useCallback(async () => {
-
-    setLoading(true);
     try { setComments(await getComments(postId)); setError(""); }
     catch (err) { setError(err.message || "No se pudieron cargar los comentarios."); }
     finally { setLoading(false); }
   }, [postId]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    let active = true;
+
+    getComments(postId).then((loadedComments) => {
+      if (!active) return;
+      setComments(loadedComments);
+      setError("");
+    }).catch((err) => {
+      if (active) setError(err.message || "No se pudieron cargar los comentarios.");
+    }).finally(() => {
+      if (active) setLoading(false);
+    });
+
+    return () => { active = false; };
+  }, [postId]);
   useEffect(() => {
 
     const update = () => {
@@ -48,11 +60,24 @@ export default function CommentList({ postId }) {
 
   if (!confirmed) return;
 
+  setLoading(true);
   try {
     await deleteComment(commentId);
     await load();
   } catch (err) {
     setError(err.message || "No se pudo eliminar el comentario.");
+    setLoading(false);
+  }
+}
+
+async function handleEdit(commentId, text) {
+  setLoading(true);
+  try {
+    await updateComment(commentId, text);
+    await load();
+  } catch (err) {
+    setLoading(false);
+    throw err;
   }
 }
 
@@ -73,6 +98,14 @@ function canDeleteComment(comment) {
   }
 
   return false;
+}
+
+function canEditComment(comment) {
+  return Boolean(
+    currentUser &&
+    (comment.authorId === currentUser.id ||
+      ["admin", "superadmin"].includes(currentUser.rol))
+  );
 }
 
   return (
@@ -98,9 +131,11 @@ function canDeleteComment(comment) {
         key={comment.id} 
         comment={comment} 
         onAddReply={handleAddReply} 
+        onEdit={handleEdit}
         onDelete={handleDelete}
         canComment={canComment} 
-        canDelete={canDeleteComment(comment)}
+        canDelete={canDeleteComment}
+        canEdit={canEditComment}
         
         />
         ))

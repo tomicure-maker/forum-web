@@ -6,7 +6,7 @@ import authRoutes from "../routes/auth.routes.js";
 import commentsRoutes from "../routes/comments.routes.js";
 import tagsRoutes from "../routes/tags.routes.js";
 import "../models/associations.js";
-import { migrateLegacyPosts, migrateUserRoles, sequelize } from "../db.js";
+import { migrateEditedBy, migrateLegacyPosts, migrateUserRoles, sequelize } from "../db.js";
 import { seedDefaultTags } from "../services/tagService.js";
 import usersRoutes from "../routes/users.routes.js";
 
@@ -45,6 +45,7 @@ try {
   await migrateLegacyPosts();
   await sequelize.sync();
   await migrateUserRoles();
+  await migrateEditedBy();
   await seedDefaultTags();
 
 

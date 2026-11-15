@@ -4,10 +4,13 @@ import Post from "../models/Post.js";
 
 const commentInclude = [
   { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
+  { model: User, as: "editor", attributes: ["id", "nombreUsuario"] },
   { model: Comentario, as: "respuestas", include: [
     { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
+    { model: User, as: "editor", attributes: ["id", "nombreUsuario"] },
     { model: Comentario, as: "respuestas", include: [
-      { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] }
+      { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
+      { model: User, as: "editor", attributes: ["id", "nombreUsuario"] },
     ] }
   ] }
 ];
@@ -50,6 +53,59 @@ export async function createComment({ postId, contenido, comentarioPadreId }, us
   });
 }
 
+export async function updateComment(commentId, contenido, user) {
+  const comment = await Comentario.findByPk(commentId, {
+    include: [
+      {
+        model: User,
+        as: "autor",
+        attributes: ["id", "rol"],
+      },
+    ],
+  });
+
+  if (!comment) {
+    const error = new Error("No se encontró el comentario.");
+    error.status = 404;
+    throw error;
+  }
+
+  const puedeEditar =
+    comment.usuarioId === user.id ||
+    ["admin", "superadmin"].includes(user.rol);
+
+  if (!puedeEditar) {
+    const error = new Error("No tenés permisos para editar este comentario.");
+    error.status = 403;
+    throw error;
+  }
+
+  if (typeof contenido !== "string" || !contenido.trim()) {
+    const error = new Error("El comentario no puede estar vacío.");
+    error.status = 400;
+    throw error;
+  }
+
+  await comment.update({
+    contenido: contenido.trim(),
+    editadoPorId: user.id,
+  });
+
+  return Comentario.findByPk(comment.id, {
+    include: [
+      {
+        model: User,
+        as: "autor",
+        attributes: ["id", "nombreUsuario", "rol"],
+      },
+      {
+        model: User,
+        as: "editor",
+        attributes: ["id", "nombreUsuario"],
+      },
+    ],
+  });
+}
 
 export async function deleteComment(commentId, user) {
   const comment = await Comentario.findByPk(commentId, {

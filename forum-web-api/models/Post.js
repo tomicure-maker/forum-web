@@ -19,6 +19,10 @@ export const Post = sequelize.define("post", {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   },
+  editadoPorId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   autorNombre: {
     type: DataTypes.STRING,
     allowNull: true,

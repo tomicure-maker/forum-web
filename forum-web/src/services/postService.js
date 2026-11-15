@@ -8,6 +8,7 @@ function mapPost(post) {
         author: post.autor?.nombreUsuario || post.autorNombre || "Usuario",
         authorId: post.autor?.id,
         authorRole: post.autor?.rol,
+        editedBy: post.editor?.nombreUsuario || null,
         date: post.fecha_creacion,
         tags: (post.etiquetas || []).map((tag) => ({ tagName: tag.nombre, color: tag.color || "secondary" })),
     };
@@ -26,6 +27,14 @@ export async function createPost({ title, content, tags }) {
     const post = await apiRequest("/posts", {
         method: "POST",
         body: JSON.stringify({ titulo: title, contenido: content, tags }),
+    });
+    return mapPost(post);
+}
+
+export async function updatePost(id, { title, content }) {
+    const post = await apiRequest(`/posts/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ titulo: title, contenido: content }),
     });
     return mapPost(post);
 }

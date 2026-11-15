@@ -17,6 +17,10 @@ export const Comentario = sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    editadoPorId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     comentarioPadreId: {
       type: DataTypes.INTEGER,
       allowNull: true,
