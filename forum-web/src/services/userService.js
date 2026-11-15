@@ -12,3 +12,9 @@ export async function updateUserRole(userId, rol) {
         body: JSON.stringify({ rol }),
     });
 }
+
+export async function deleteUser(userId) {
+    return apiRequest(`/users/${userId}`, {
+        method: "DELETE",
+    });
+}

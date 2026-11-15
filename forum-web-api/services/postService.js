@@ -4,6 +4,7 @@ import { Etiqueta } from "../models/Etiqueta.js";
 
 const include = [
   { model: User, as: "autor", attributes: ["id", "nombreUsuario", "rol"] },
+  { model: User, as: "editor", attributes: ["id", "nombreUsuario"] },
   { model: Etiqueta, as: "etiquetas", through: { attributes: [] } },
 ];
 
@@ -33,6 +34,53 @@ export async function createPost({ titulo, contenido, tags = [] }, userId) {
     }
     await post.setEtiquetas(tagRows);
   }
+  return getPost(post.id);
+}
+
+export async function updatePost(id, { titulo, contenido } = {}, user) {
+  const post = await Post.findByPk(id, {
+    include: [
+      {
+        model: User,
+        as: "autor",
+        attributes: ["id", "rol"],
+      },
+    ],
+  });
+
+  if (!post) {
+    const error = new Error("No se encontró la publicación.");
+    error.status = 404;
+    throw error;
+  }
+
+  const puedeEditar =
+    post.usuarioId === user.id ||
+    ["admin", "superadmin"].includes(user.rol);
+
+  if (!puedeEditar) {
+    const error = new Error("No tenés permisos para editar esta publicación.");
+    error.status = 403;
+    throw error;
+  }
+
+  if (
+    typeof titulo !== "string" ||
+    !titulo.trim() ||
+    typeof contenido !== "string" ||
+    !contenido.trim()
+  ) {
+    const error = new Error("El título y el contenido son obligatorios.");
+    error.status = 400;
+    throw error;
+  }
+
+  await post.update({
+    titulo: titulo.trim(),
+    contenido: contenido.trim(),
+    editadoPorId: user.id,
+  });
+
   return getPost(post.id);
 }
 

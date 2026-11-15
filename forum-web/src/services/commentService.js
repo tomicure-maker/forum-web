@@ -6,6 +6,7 @@ function mapComment(comment) {
     author: comment.autor?.nombreUsuario || "Usuario",
     authorId: comment.autor?.id,
     authorRole: comment.autor?.rol,
+    editedBy: comment.editor?.nombreUsuario || null,
     text: comment.contenido,
     replies: (comment.respuestas || []).map(mapComment),
     date: comment.fecha_creacion,
@@ -28,5 +29,12 @@ export async function addComment(postId, text, parentId = null) {
 export async function deleteComment(commentId) {
   await apiRequest(`/comments/${commentId}`, {
     method: "DELETE",
+  });
+}
+
+export async function updateComment(commentId, text) {
+  await apiRequest(`/comments/${commentId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ contenido: text }),
   });
 }

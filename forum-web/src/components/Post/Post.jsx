@@ -3,7 +3,7 @@ import Tag from "../Tag/Tag";
 import { getCurrentUser } from "../../services/authService.js";
 
 
-function Post({ id, title, content, tags = [], authorId, authorRole, onDeletePost }) {
+function Post({ id, title, content, tags = [], author, editedBy, authorId, authorRole, onDeletePost }) {
 
     const navigate = useNavigate();
     const currentUser = getCurrentUser();
@@ -24,6 +24,8 @@ function Post({ id, title, content, tags = [], authorId, authorRole, onDeletePos
     return (
         <div className="blog-post border rounded p-3 mb-3 shadow-sm w-100" onClick={handlePostClick}>
             <h2 className="display-5 link-body-emphasis mb-1">{title}</h2>
+            <p className="text-muted small mb-2">Publicado por {author}</p>
+            {editedBy && <p className="text-muted small mb-2">Editado por {editedBy}</p>}
 
             {canDelete && (
                 <button

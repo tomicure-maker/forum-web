@@ -49,3 +49,31 @@ export async function getUsers() {
         order: [["id", "ASC"]],
     });
 }
+
+export async function deleteUser(userId, currentUserId) {
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+        const error = new Error("No se encontró el usuario");
+        error.status = 404;
+        throw error;
+    }
+
+    if (user.rol === "superadmin") {
+        const error = new Error(
+            "No se puede eliminar a un superadministrador"
+        );
+        error.status = 403;
+        throw error;
+    }
+
+    if (user.id === currentUserId) {
+        const error = new Error(
+            "No podés eliminar tu propia cuenta"
+        );
+        error.status = 403;
+        throw error;
+    }
+
+    await user.destroy();
+}

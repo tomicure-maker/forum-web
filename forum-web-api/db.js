@@ -74,3 +74,26 @@ export async function migrateUserRoles() {
 
   console.log("Migracion de roles completada");
 }
+
+export async function migrateEditedBy() {
+  const queryInterface = sequelize.getQueryInterface();
+  const tables = await queryInterface.showAllTables();
+
+  for (const table of ["posts", "comentarios"]) {
+    if (!tables.includes(table)) continue;
+
+    const columns = await queryInterface.describeTable(table);
+    if (!columns.editadoPorId) {
+      await queryInterface.addColumn(table, "editadoPorId", {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
+      });
+    }
+  }
+}

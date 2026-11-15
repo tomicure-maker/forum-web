@@ -11,6 +11,7 @@ function PostList({ posts, onDeletePost }) {
                 content={post.content} 
                 tags={post.tags} 
                 author={post.author} 
+                editedBy={post.editedBy}
                 date={post.date} 
                 authorId={post.authorId}
                 authorRole={post.authorRole}

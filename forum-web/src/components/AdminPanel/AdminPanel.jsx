@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../../services/authService.js"
-import { getUsers, updateUserRole } from "../../services/userService.js";
+import { getUsers, updateUserRole, deleteUser } from "../../services/userService.js";
 
 function AdminPanel() {
     const [users, setUsers] = useState([]);
@@ -9,6 +9,7 @@ function AdminPanel() {
     const [message, setMessage] = useState("");
     
     const currentUser = getCurrentUser();
+    
 
     useEffect(() => {
         async function loadUsers() {
@@ -46,6 +47,30 @@ function AdminPanel() {
         }
     }
 
+    async function handleDeleteUser(userId) {
+    const confirmed = window.confirm(
+        "¿Estas seguro de eliminar este usuario?"
+    );
+
+    if (!confirmed) return;
+
+    setError("");
+    setMessage("");
+
+    try {
+        await deleteUser(userId);
+
+        setUsers((previousUsers) =>
+            previousUsers.filter((user) => user.id !== userId)
+        );
+
+        setMessage("Usuario eliminado correctamente");
+
+    } catch (error) {
+        setError(error.message);
+    }
+}
+
     if (loading) return <p>Cargando usuarios...</p>;
 
     return (
@@ -78,22 +103,31 @@ function AdminPanel() {
                                 user.id === currentUser?.id ? (
                                     <span>Sin acciones disponibles</span>
                                 ) : (
-                                    <select
-                                        value={user.rol}
-                                        onChange={(e) =>
-                                            handleRoleChange(
-                                                user.id,
-                                                e.target.value
-                                            )
-                                        }
-                                    >
-                                        <option value="usuario">
-                                            Usuario
-                                        </option>
-                                        <option value="admin">
-                                            Administrador
-                                        </option>
-                                    </select>
+                                    <>
+                                        <select
+                                            value={user.rol}
+                                            onChange={(e) =>
+                                                handleRoleChange(
+                                                    user.id,
+                                                    e.target.value
+                                                )
+                                            }
+                                         >
+                                            <option value="usuario">
+                                                 Usuario
+                                            </option>
+                                            <option value="admin">
+                                                Administrador
+                                            </option>
+                                        </select>
+
+                                        <button
+                                            className="btn btn-danger btn-sm ms-2"
+                                            onClick={() => handleDeleteUser(user.id)}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </>
                                 )}
                             </td>
                         </tr>
