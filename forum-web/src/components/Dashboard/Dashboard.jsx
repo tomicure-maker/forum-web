@@ -58,17 +58,28 @@ function Dashboard() {
 
     return (
         <div className="d-flex flex-column align-items-center">
-            <h1>FORO</h1>
-            {error && <Alert variant="danger" className="w-75">{error}</Alert>}
-            {loggedIn ? <NewPost onNewPostSubmit={handleNewPostSubmit} availableTags={availableTags} /> : <p>Inicia sesión para crear publicaciones</p>}
-            {loading ? (
-                <Spinner animation="border" role="status" aria-label="Cargando publicaciones" /> 
-            ) : (
-                <PostList 
-                posts={posts}
-                onDeletePost={handleDeletePost}
-                
+            <h1>Compartí tus ideas</h1>
+            {error && (
+                <Alert variant="danger" className="w-75">
+                    {error}
+                </Alert>
+            )}
+            {loggedIn ? (
+                <NewPost
+                    onNewPostSubmit={handleNewPostSubmit}
+                    availableTags={availableTags}
                 />
+            ) : (
+                <p>Inicia sesión para crear publicaciones</p>
+            )}
+            {loading ? (
+                <Spinner
+                    animation="border"
+                    role="status"
+                    aria-label="Cargando publicaciones"
+                />
+            ) : (
+                <PostList posts={posts} onDeletePost={handleDeletePost} />
             )}
         </div>
     );
